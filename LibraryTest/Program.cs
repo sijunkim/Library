@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Library.Tools;
+using Library.Extensions;
 
 namespace LibraryTest
 {
@@ -11,20 +12,12 @@ namespace LibraryTest
     {
         static void Main(string[] args)
         {
-            LogManager log = new LogManager();
+            //string temp = "12/08/2016 20:14:23";
 
-            log.WriteLine("[Begin Processing]");
+            //Console.WriteLine("IsNumeric : " + temp.IsNumeric());
+            //Console.WriteLine("IsDateTime : " + temp.IsDateTime());
 
-            for (int index = 0; index < 10; index++)
-            {
-                log.WriteLine("Processing: " + index);
-
-                System.Threading.Thread.Sleep(500);
-
-                log.WriteLine("Done: " + index);
-            }
-
-            log.WriteLine("[End Processing]");
+            
         }
     }
 }

@@ -7,42 +7,74 @@ using System.IO;
 
 namespace Library.Tools
 {
+    public enum LogType { Daily, Monthly }
+
     public class LogManager
     {
-        private string path;
+        private string entirePath;
 
         #region Constructors
-        public LogManager(string path)
+        public LogManager(string path, LogType logType, string prefix, string postfix)
         {
-            this.path = path;
-            SetLogPath();
+            this.entirePath = path;
+            SetLogPath(logType, prefix, postfix);
+        }
+
+        public LogManager(string prefix, string postfix)
+            : this(Path.Combine(Application.Root, "Log"), LogType.Daily, prefix, postfix)
+        {
+
         }
 
         public LogManager()
-            : this(Path.Combine(Application.Root, "Log"))
+            : this(Path.Combine(Application.Root, "Log"), LogType.Daily, null, null)
         {
         }
         #endregion
 
         #region Methods
-        private void SetLogPath()
+        private void SetLogPath(LogType logType, string prefix, string postfix)
         {
-            string logFile = string.Empty;
+            string path = string.Empty;
+            string name = string.Empty;
 
-            if (!Directory.Exists(path))
+            switch (logType)
             {
-                Directory.CreateDirectory(path);
+                case LogType.Daily:
+                    path = string.Format(@"{0}\{1}\", DateTime.Now.Year, DateTime.Now.ToString("MM"));
+                    name = DateTime.Now.ToString("yyyyMMdd") + ".txt";
+                    break;
+                case LogType.Monthly:
+                    path = string.Format(@"{0}\", DateTime.Now.Year);
+                    name = DateTime.Now.ToString("yyyyMM") + ".txt";
+                    break;
             }
 
-            logFile = DateTime.Now.ToString("yyyyMMdd") + ".txt";
-            path = Path.Combine(path, logFile);
+            entirePath = Path.Combine(entirePath, path);
+
+            if (!Directory.Exists(entirePath))
+            {
+                Directory.CreateDirectory(entirePath);
+            }
+
+            if (!String.IsNullOrEmpty(prefix))
+            {
+                name = prefix + name;
+            }
+
+            if (!String.IsNullOrEmpty(postfix))
+            {
+                name = name + postfix;
+            }
+
+            entirePath = Path.Combine(entirePath, name);
         }
 
         public void Write(string data)
         {
             try
             {
-                using (StreamWriter writer = new StreamWriter(path, true))
+                using (StreamWriter writer = new StreamWriter(entirePath, true))
                 {
                     writer.Write(data);
                 }
@@ -54,7 +86,7 @@ namespace Library.Tools
         {
             try
             {
-                using (StreamWriter writer = new StreamWriter(path, true))
+                using (StreamWriter writer = new StreamWriter(entirePath, true))
                 {
                     writer.WriteLine(DateTime.Now.ToString("yyyyMMdd HH:mm:ss\t") + data);
                 }
